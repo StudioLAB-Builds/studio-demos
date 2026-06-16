@@ -6,6 +6,8 @@
   "scripts": {
     "admin": "node scripts/admin-server.mjs",
     "build:galleries": "node scripts/build-studio-galleries.mjs",
+    "generate": "node scripts/generate-studio.mjs",
+    "generate:all": "node scripts/generate-studio.mjs --all",
     "start": "python3 -m http.server 8765 --bind 127.0.0.1",
     "validate": "node scripts/validate-site.mjs"
   },

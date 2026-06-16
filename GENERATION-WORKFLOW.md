@@ -4,6 +4,11 @@ End-to-end process for generating, reviewing, and shipping studio website templa
 
 The point of this workflow is to compare design directions across models on equal footing, then merge the chosen direction (or a hybrid of two) to the studio's gallery. Every AI starts from identical inputs. Variation comes from the models, not the brief.
 
+> **Complementary path:** for fast, deterministic spin-up from a JSON brief using a proven
+> template engine (variation from the brief, not the model), see `TEMPLATE-GENERATOR.md`
+> (`npm run generate`). Use the AI workflow for bespoke exploration; use the generator when you
+> already have a design you trust.
+
 ---
 
 ## Step 1. Receive Prospect Interest
