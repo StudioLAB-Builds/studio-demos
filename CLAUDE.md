@@ -181,3 +181,6 @@ For every new session in this repo, in this order:
 6. The existing studio folder under `studios/<studio-slug>/` if one already exists, to see prior variants and the current manifest.
 
 Then start work.
+## Session handover (HARD RULE, no exceptions)
+
+Continuously self-monitor context. The instant it reaches 60% (or at any natural task or slice boundary, whichever comes first), STOP all work immediately and emit a ready-to-paste HANDOVER PROMPT as a single fenced code block, then start a fresh session. Do not push toward the limit or rely on auto-compaction; the handover takes priority over finishing the current step. Gary may demand it at any time; produce it immediately. Full rule: StudioLAB-Shared/EXECUTION-ROUTING-STANDARD.md.
