@@ -70,7 +70,7 @@ Do not add a `_config.yml`. Do not delete `.nojekyll`. Both would break Pages.
 
 The brand voice, visual identity, design system specification, and broader StudioLAB business context all live in a separate knowledge base repo:
 
-`https://github.com/StudioLAB-Builds/studiolab-context`
+`https://github.com/StudioLAB-Builds/studiolab-context` (local path: `/Users/gary/Claude_Projects/StudioLAB-Builds/studiolab-context/`)
 
 Every AI session that is going to generate, modify, or critique a studio template MUST read the following files from the knowledge base before producing any HTML, copy, or design judgement:
 
