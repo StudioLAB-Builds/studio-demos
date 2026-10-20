@@ -1,0 +1,153 @@
+# studio-demos — context
+
+Moved out of CLAUDE.md / AGENTS.md so each stays a short pointer. Read this after `BRAND.md` and
+the knowledge base files, before generating or editing anything.
+
+## 1. Purpose Of This Repo
+
+This is the **studio website template demo library** for StudioLAB.
+
+It exists to:
+
+1. Hold real, working HTML demos of studio websites grouped by the studio they were generated for.
+2. Serve those demos as a static site via GitHub Pages so a prospect or existing studio can review concepts through a single clean gallery link, without seeing other studios' work.
+3. Let multiple AI tools collaborate on the same studio brief by producing competing variants in separate branches, then reviewing and merging the chosen direction.
+4. Keep visibility of each demo under per-studio manifest control, so internal drafts and rejected variants stay in the repo without leaking into the studio-facing gallery.
+
+This repo is the source of truth for **template implementations** and the **prospect-facing gallery system**.
+
+It is not the source of truth for brand voice, visual identity, or design system rules. Those live in the knowledge base repo. See section 4.
+
+---
+
+## 2. Current Repo Structure
+
+```text
+/
+├── CLAUDE.md                    AI master entry point
+├── AGENTS.md                    AI master entry point
+├── BRAND.md                     bridge file pointing to the knowledge base repo
+├── GENERATION-WORKFLOW.md       end-to-end multi-AI variation workflow
+├── STUDIO-BRIEF-TEMPLATE.md     standard input format for a new studio brief
+├── README.md                    human-facing operational documentation
+├── index.html                   internal StudioLAB hub listing all studios
+├── .nojekyll                    forces GitHub Pages to serve files as-is
+├── package.json                 npm scripts only (validate, serve), no runtime deps
+├── scripts/
+│   └── validate-site.mjs        link and structure validation
+├── styles/
+│   └── index.html               internal holding area for future style shortlists
+└── studios/
+    └── <studio-slug>/           one folder per studio, kebab-case
+        ├── index.html           the studio-facing gallery for that studio
+        ├── templates.json       manifest controlling which demos are shown
+        ├── assets/              shared imagery for this studio
+        ├── previews/            preview PNGs referenced by the manifest
+        └── demos/
+            └── <variant-slug>/
+                └── index.html   the actual demo build
+```
+
+The root `index.html` is the internal hub. The per-studio `index.html` is what gets shared with the studio. Demos under `demos/` are the renderable variants. The manifest decides which of those demos appear in the gallery.
+
+Do not move, rename, or restructure existing files in `index.html`, `studios/`, `styles/`, or `scripts/`. Add new files under the conventions above.
+
+---
+
+## 3. GitHub Pages Behaviour
+
+The repo is published from `main` at the repo root. `.nojekyll` is present so GitHub Pages serves files exactly as written, including underscores and folders that start with characters Jekyll would otherwise strip.
+
+Any new HTML added under `studios/<studio>/demos/<variant>/index.html` is automatically reachable at the matching URL on the published site once the commit lands on `main`. Preview PNGs need to live under `studios/<studio>/previews/` and be referenced from the manifest.
+
+Do not add a `_config.yml`. Do not delete `.nojekyll`. Both would break Pages.
+
+---
+
+## 4. Knowledge Base Repo (Source Of Truth For Brand And Design)
+
+The brand voice, visual identity, design system specification, and broader StudioLAB business context all live in a separate knowledge base repo:
+
+`https://github.com/StudioLAB-Builds/studiolab-context` (local path: `/Users/gary/Claude_Projects/StudioLAB-Builds/studiolab-context/`)
+
+Every AI session that is going to generate, modify, or critique a studio template MUST read the following files from the knowledge base before producing any HTML, copy, or design judgement:
+
+| Purpose | Path in knowledge base repo |
+|---|---|
+| Brand voice (tone, vocabulary, what to avoid) | `00-Core/Brand-Voice.md` |
+| AI decision authority (what the AI decides vs. what Gary decides) | `00-Core/AI-Decision-Authority.md` |
+| Personalisation profile (founder voice, communication preferences, StudioLAB positioning) | `00-Core/Personalisation-Profile.md` |
+| Design system specification (components, layout rules, type, colour, motion) | `07-Websites/Design-System.md` |
+
+These four files are non-optional reading. If a session has not read them, stop and read them before writing template content. Do not generate from memory of prior sessions, because the knowledge base evolves between sessions and the version in your head is likely stale.
+
+`BRAND.md` in this repo is the only place that references the knowledge base. Cascading updates flow from the knowledge base into every template generated here. Do not duplicate brand or design system rules into this repo.
+
+---
+
+## 5. Manifest System
+
+Each studio folder has a `templates.json` manifest at `studios/<studio>/templates.json`. The manifest is what decides what a studio sees when they open their gallery link.
+
+The two fields that matter most:
+
+- `status`: `visible` renders the demo in the studio-facing gallery. `hidden` keeps the demo file in the repo but excludes it from the gallery. Use `hidden` for internal drafts, AI variants that were not selected for the final review, and reference builds kept for comparison.
+- `order`: lower numbers render first. Leave gaps (10, 20, 30) so new entries can slot in without renumbering everything.
+
+After any manifest change, run the project's validation script (`npm run validate`) and, if a gallery build script is present, run that as well. The studio-facing `index.html` is generated from the manifest, not hand-edited.
+
+When an AI tool commits a new variant, it should default the variant's `status` to `hidden` so the studio does not see unreviewed work. The variant is promoted to `visible` only after internal review.
+
+---
+
+## 6. Multi-AI Variation Workflow
+
+This repo is explicitly designed for **multiple AI tools to generate competing variants from the same studio brief**, so the team can compare design directions across models before choosing one.
+
+The expectation is that every AI tool reads the same brand source, the same design system spec, and the same `STUDIO-BRIEF-TEMPLATE.md` input. Variation between the outputs comes from differences between the models, not from differences in inputs. If two AIs produce wildly different work, the prompt and the source files have done their job. If two AIs produce essentially identical work, that is also fine: it means the brief was unambiguous.
+
+### Branch naming convention
+
+Variants are committed to feature branches named with an AI tool prefix so it is obvious which model produced which design.
+
+- `claude/<studio-slug>-<variant-slug>`
+- `Codex/<studio-slug>-<variant-slug>`
+- `codex/<studio-slug>-<variant-slug>`
+- `gemini/<studio-slug>-<variant-slug>`
+- `antigravity/<studio-slug>-<variant-slug>`
+
+For tools not in this list, use the tool's short name as the prefix (`cursor/`, `aider/`, etc.). Keep the prefix lowercase.
+
+### Where variants live
+
+All variants for a studio sit at `studios/<studio-slug>/demos/<variant-slug>/index.html`, with a matching preview image at `studios/<studio-slug>/previews/<variant-slug>.png`.
+
+### What an AI tool is allowed to commit
+
+AI tools working in this repo commit only:
+
+1. New or updated HTML and assets under `studios/<studio-slug>/demos/<variant-slug>/`.
+2. New preview PNGs under `studios/<studio-slug>/previews/`.
+3. Manifest changes to `studios/<studio-slug>/templates.json` that add or update the variant the AI just produced.
+
+AI tools must **not** modify:
+
+- The root `index.html` hub or its styles.
+- Other studios' folders.
+- Other variants under the same studio that the AI did not produce.
+- `scripts/`, `styles/`, `.nojekyll`, `package.json`, or top-level documentation, unless explicitly asked by Gary.
+- Brand voice, visual identity, or design system content. Those changes belong in the knowledge base repo at `https://github.com/StudioLAB-Builds/studiolab-context`, not here.
+
+Full step-by-step process is in `GENERATION-WORKFLOW.md`.
+
+---
+
+## 7. Cross-AI Parity Expectation
+
+If a generated template feels off-brand, the failure is almost always one of the following, in order of likelihood:
+
+1. The AI did not actually read the knowledge base brand and design files this session.
+2. The studio brief was incomplete and the AI filled in gaps from training data instead of asking.
+3. The AI optimised for visual flourish over the StudioLAB design system rules.
+
+Read the sources. Ask Gary if a brief field is missing instead of guessing. Defer to the design system over your own design instinct.
